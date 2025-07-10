@@ -1,0 +1,46 @@
+# CmakaList.txt
+
+## Enlaces simbolicos que se deben crear en el directorio princiapl ( o incluir todo el directorio )
+#  Enlace a compilador cruzado
+#  ln -s /home/santiago/Documentos/milkv/docker/duo-buildroot-sdk-v2/host-tools/ host-tools
+#  Enlace a simbolos de imagen compilada en docker
+#  ln -s /home/santiago/Documentos/milkv/docker/duo-buildroot-sdk-v2/buildroot/output/milkv-duos-musl-riscv64-sd/host/riscv64-buildroot-linux-musl/sysroot/usr sysroot
+cmake_minimum_required(VERSION 3.5)
+
+project(bluez_inc C)
+
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR riscv64)
+
+## Compilador y opciones de compilacion C y C++
+set(CMAKE_C_COMPILER "${CMAKE_CURRENT_SOURCE_DIR}/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc")
+set(CMAKE_CXX_COMPILER "${CMAKE_CURRENT_SOURCE_DIR}/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-g++")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -Werror -Wextra -Wno-unused-function -Wno-unused-parameter -Wstrict-prototypes -Wshadow -Wconversion ")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mcpu=c906fdv -march=rv64imafdcv0p7xthead -mcmodel=medany -mabi=lp64d")
+
+
+## GLIB2.0
+set(GLIB2_INCLUDE_DIR 
+	"${CMAKE_CURRENT_SOURCE_DIR}/sysroot/include/glib-2.0/"
+	"${CMAKE_CURRENT_SOURCE_DIR}/sysroot/lib/glib-2.0/include/"
+
+	)
+
+set(GLIB2_LIBRARY 
+	"${CMAKE_CURRENT_SOURCE_DIR}/sysroot/lib/libglib-2.0.so"
+	"${CMAKE_CURRENT_SOURCE_DIR}/sysroot/lib/libpcre2-8.so.0"
+	"${CMAKE_CURRENT_SOURCE_DIR}/sysroot/lib/libgio-2.0.so"
+	"${CMAKE_CURRENT_SOURCE_DIR}/sysroot/lib/libgobject-2.0.so.0"
+	"${CMAKE_CURRENT_SOURCE_DIR}/sysroot/lib/libgmodule-2.0.so.0"
+	"${CMAKE_CURRENT_SOURCE_DIR}/sysroot/lib/libz.so.1"
+	"${CMAKE_CURRENT_SOURCE_DIR}/sysroot/lib/libmount.so"
+	"${CMAKE_CURRENT_SOURCE_DIR}/sysroot/lib/libffi.so.8"
+	"${CMAKE_CURRENT_SOURCE_DIR}/sysroot/lib/libblkid.so"
+	) 
+
+include_directories(${GLIB2_INCLUDE_DIR})
+
+add_subdirectory(binc)
+add_subdirectory(examples/central)
+add_subdirectory(examples/peripheral)
+add_subdirectory(calisoftware/server_ble)
